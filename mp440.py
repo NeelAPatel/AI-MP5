@@ -1,6 +1,8 @@
 import inspect
 import sys
 import numpy as np
+import matplotlib as mp
+import matplotlib.pyplot as pyplot
 
 '''
 Raise a "not defined" exception as a reminder 
@@ -89,10 +91,31 @@ Plotting
 
 
 def plot(data, output):
-	# Your code starts here
-	# You should remove _raise_not_defined() after you complete your code
-	# Your code ends here
-	_raise_not_defined()
+	#set up plot
+	dataX = []
+	dataY = []
+	outX = []
+	outY = []
+	
+	# 3rd and 4th values, Z1 Z2
+	for dat in data:
+		dataX.append(dat[2])
+		dataY.append(dat[3])
+	
+	for out in output:
+		outX.append(out.item(0))
+		outY.append(out.item(1))
+	
+	lineA = pyplot.plot(outX, outY, label="Estimated position")
+	lineB = pyplot.plot(dataX, dataY, label="Observed position")
+	
+	pyplot.setp(lineA, color = 'Red')
+	pyplot.setp(lineB, color = 'Blue')
+	pyplot.legend()
+	pyplot.show()
+	
+	
+	
 	return
 
 
