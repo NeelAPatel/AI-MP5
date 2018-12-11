@@ -17,24 +17,27 @@ def _raise_not_defined():
 # 5 formulas
 def kf_predictStateEstimate(A, xPrev, B, U):
 	predX = A * xPrev + B * U
+	#predX = xPrev + U
 	return predX
 
-
 def kf_predictErrorCovariance(A, pPrev, Q):
+	
 	predP = A * pPrev * np.transpose(A) + Q
+	#predP = pPrev + Q
 	return predP
-
 
 def kf_updateKalmanGain(P, H, R):
 	return P * np.transpose(H) * np.linalg.inv(H * P * np.transpose(H) + R)
-
+	#return P *  np.linalg.inv(P + R)
 
 def kf_updateStateEstimate(X, kalman, H, Z):
 	return X + kalman * (Z - H * X)
-
+	#return np.linalg.inv(X) + kalman * Z - np.linalg.inv(X)
 
 def kf_updateEstimateCovariance(H, kalman, P):
+	
 	return (np.identity(2) - kalman * H) * P
+	#return (np.identity(2) - kalman ) * P
 
 
 '''
@@ -58,6 +61,7 @@ def kalman2d(data, scale=1):
 	#initial estimation
 	lambdaScaling = scale
 	pPrev = lambdaScaling * np.identity(2)
+	
 	X = np.transpose(np.matrix([0,0]))
 	
 	estimated.append(X)
@@ -106,11 +110,23 @@ def plot(data, output):
 		outX.append(out.item(0))
 		outY.append(out.item(1))
 	
-	lineA = pyplot.plot(outX, outY, label="Estimated position")
+	#Red
+	lineA = pyplot.plot(outX, outY, 'ro')
+	lineA = pyplot.plot(outX, outY, 'r-')
+	lineA = pyplot.plot(outX, outY, label = "Estimated Position")
+	
+	#Blue
+	lineB = pyplot.plot(dataX, dataY, 'bo')
+	lineB = pyplot.plot(dataX, dataY, 'b-')
 	lineB = pyplot.plot(dataX, dataY, label="Observed position")
 	
 	pyplot.setp(lineA, color = 'Red')
 	pyplot.setp(lineB, color = 'Blue')
+	pyplot.grid(color='Grey', linestyle='-', linewidth=0.5)
+	pyplot.axis([2, 9, -2.5, 1.0])
+	pyplot.xlabel('X')
+	pyplot.ylabel('Y')
+#pyplot.ion()
 	pyplot.legend()
 	pyplot.show()
 	
