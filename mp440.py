@@ -159,8 +159,10 @@ def kalman2d_shoot(ux, uy, ox, oy, reset=False):
 	Amx = np.identity(2)
 	Bmx = np.identity(2)
 	Hmx = np.identity(2)
-	Q = np.matrix([[0.0001, 0.00002], [0.00002, 0.0001]])
-	R = np.matrix([[0.01, 0.005], [0.005, 0.02]])
+	#Q = np.matrix([[0.0001, 0.00002], [0.00002, 0.0001]])
+	#R = np.matrix([[0.01, 0.005], [0.005, 0.02]])
+	Q = np.matrix([[2, 0.5], [0.5, 2]])
+	R = np.matrix([[200, 50], [50, 300]])
 	
 	#Calculations
 	uVal = [ux,uy]
@@ -181,18 +183,17 @@ def kalman2d_shoot(ux, uy, ox, oy, reset=False):
 	xUpdate = kf_updateStateEstimate(xPredict, kalmanGain, Hmx, zVal)
 	pUpdate = kf_updateEstimateCovariance(Hmx, kalmanGain, pPredict)
 	
+	# use xupdate to shoot @ coordinates
+	xlow1 = xUpdate[0].item(0)
+	xlow2 = xUpdate[0].item(1)
 	
 	
 	#use pudpate to find good range
 	plow1 = pUpdate[0].item(0)
 	plow2 = pUpdate[0].item(1)
 	
-	#use xupdate to shoot @ coordinates
-	xlow1 = xUpdate[0].item(0)
-	xlow2 = xUpdate[0].item(1)
-	
-	
-	if (plow1 < 0.001) and (plow2 < 0.001):
+	print((plow1, plow2))
+	if (plow2 < 4.76) :
 	#if (abs(ox - xlow1) <= 5 and abs(oy - xlow2) <= 5):
 		print("SHOOT!")
 		print(str(xUpdate[0]) + str(xUpdate[1]))

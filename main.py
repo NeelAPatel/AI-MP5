@@ -77,7 +77,7 @@ def _ui_loop():
 
     while not PG_GAME_EXIT:
         # Poll events
-        event = pygame.event.poll()
+        event = pygame.event.wait()
 
         # Process events
 
@@ -90,30 +90,7 @@ def _ui_loop():
             PG_GAME_EXIT = True
 
         # Update UI
-        if PG_UI_UPDATED == True:
-            # Redraw the screen
-            #PG_SCREEN.fill(PG_BACKGROUND)
-            (rx, ry) = PG_SCREEN.get_rect().topleft
-
-            # Draw the target
-            if PG_LASER_ON:
-                (ex, ey) = TARGET_ESTIMATED_LOCATION
-                PG_SCREEN.blit(PG_LASER_IMAGE, (rx + ex + PG_LASER_IMAGE_WIDTH/2 + 2, 0))
-
-                (x, y) = TARGET_LOCATION
-                PG_SCREEN.blit(PG_TARGET_IMAGE, (rx + x, ry + y))
-
-            # Draw observed
-            if not PG_LASER_ON:
-                (ox, oy) = TARGET_OBSERVED_LOCATION
-                PG_SCREEN.blit(PG_TARGET_OBSERVED_IMAGE, (rx + ox, ry + oy))
-
-            # Draw estimated
-            #(ex, ey) = TARGET_ESTIMATED_LOCATION
-            #PG_SCREEN.blit(PG_TARGET_IMAGE, (rx + ex, ry + ey))
-
-            pygame.display.update()
-            PG_UI_UPDATED = False
+        
 
     pygame.quit()
 
@@ -163,7 +140,6 @@ def _background_logic():
             (ex, ey, shoot) = mp.kalman2d_shoot(ux, uy, x + oxn[0], y + oyn[0], first_iteration)
             if first_iteration == True:
                 first_iteration = False
-
             TARGET_ESTIMATED_LOCATION = (ex, ey)
             if shoot == True:
                 PG_LASER_ON = True
@@ -173,6 +149,31 @@ def _background_logic():
                 print "Off target center by " + str(ex - TARGET_LOCATION[0])
     
             PG_UI_UPDATED = True
+
+        if PG_UI_UPDATED == True:
+            # Redraw the screen
+            PG_SCREEN.fill(PG_BACKGROUND)
+            (rx, ry) = PG_SCREEN.get_rect().topleft
+
+            # Draw the target
+            if PG_LASER_ON:
+                (ex, ey) = TARGET_ESTIMATED_LOCATION
+                PG_SCREEN.blit(PG_LASER_IMAGE, (rx + ex + PG_LASER_IMAGE_WIDTH/2 + 2, 0))
+
+                (x, y) = TARGET_LOCATION
+                PG_SCREEN.blit(PG_TARGET_IMAGE, (rx + x, ry + y))
+
+            # Draw observed
+            if not PG_LASER_ON:
+                (ox, oy) = TARGET_OBSERVED_LOCATION
+                PG_SCREEN.blit(PG_TARGET_OBSERVED_IMAGE, (rx + ox, ry + oy))
+
+            # Draw estimated
+            #(ex, ey) = TARGET_ESTIMATED_LOCATION
+            #PG_SCREEN.blit(PG_TARGET_IMAGE, (rx + ex, ry + ey))
+
+            pygame.display.update()
+            PG_UI_UPDATED = False
     return
 
 '''
@@ -191,20 +192,16 @@ if __name__ == "__main__":
     # This is for part a of the MP. Comment this when you want to work on part b of the MP
     # data = _load_data()
     # output = mp.kalman2d(data)
-    # mp.plot(data, output)
+    # plot(data, output)
 
     # This is for part b of the MP. Uncomment when you work on this part of the MP
-    
-    #Remove the block comment to work on part b of the the MP 
+    #Remove the block comment to work on part b of the the MP
 
-    # Setup the UI
+    #Setup the UI
     _setup_ui()
-
-    # Start main logic thread
+    #Start main logic thread
     thread = threading.Thread(target=_background_logic)
     thread.start()
 
-    # Enter UI loop
+   # Enter UI loop
     _ui_loop()
-
-    
