@@ -43,7 +43,7 @@ def kf_updateEstimateCovariance(H, kalman, P):
 '''
 Kalman 2D
 '''
-def kalman2d(data, scale=1000):
+def kalman2d(data, scale=1):
 	estimated = []
 	
 	#Noise Calculations
@@ -193,6 +193,13 @@ def kalman2d_shoot(ux, uy, ox, oy, reset=False):
 	
 	
 	if (plow1 < 0.001) and (plow2 < 0.001):
+	#if (abs(ox - xlow1) <= 5 and abs(oy - xlow2) <= 5):
+		print("SHOOT!")
+		print(str(xUpdate[0]) + str(xUpdate[1]))
+		print(str(pUpdate[0]) + str(pUpdate[1]))
+		print(str((ox, oy)) + str((ux,uy)))
+		print((xlow1, xlow2))
+		print((plow1, plow2))
 		decision = (xlow1, xlow2, True) #shoot
 	else:
 		decision = (xlow1, xlow2, False)
