@@ -141,32 +141,22 @@ global arrXUpdates
 global arrPUpdates
 global count
 
-def kalman2d_shoot(ux, uy, ox, oy, reset=False):
-	decision = (0, 0, False)
-	#uxuy = u value || oxoy = z value
+def _KALMANCALCULATION_(ux, uy, ox, oy,arrXUpdates, arrPUpdates,reset):
+
 	
-	if reset == True:
-		global arrXUpdates
-		arrXUpdates = [[0, 0]]
-		global arrPUpdates
-		arrPUpdates = [(2*np.identity(2))]
-		
-		global count
-		count = 1
-		
 	Amx = np.identity(2)
 	Bmx = np.identity(2)
 	Hmx = np.identity(2)
-	Q = np.matrix([[2, 0.5], [0.5, 2]]) #Q = np.matrix([[0.0001, 0.00002], [0.00002, 0.0001]])
-	R = np.matrix([[200, 50], [50, 300]]) #R = np.matrix([[0.01, 0.005], [0.005, 0.02]])
+	Q = np.matrix([[2, 0.5], [0.5, 2]])  # Q = np.matrix([[0.0001, 0.00002], [0.00002, 0.0001]])
+	R = np.matrix([[200, 50], [50, 300]])  # R = np.matrix([[0.01, 0.005], [0.005, 0.02]])
 	
-	#Calculations
-	uVal = [ux,uy]
-	zVal = [ox,oy]
+	# Calculations
+	uVal = [ux, uy]
+	zVal = [ox, oy]
 	uVal = np.transpose(uVal)
 	zVal = np.transpose(zVal)
-
-	#get latest value from arrays
+	
+	# get latest value from arrays
 	xPrev = arrXUpdates[len(arrXUpdates) - 1]
 	pPrev = arrPUpdates[len(arrPUpdates) - 1]
 	
@@ -176,6 +166,43 @@ def kalman2d_shoot(ux, uy, ox, oy, reset=False):
 	xUpdate = kf_updateStateEstimate(xPredict, kalmanGain, Hmx, zVal)
 	pUpdate = kf_updateEstimateCovariance(Hmx, kalmanGain, pPredict)
 	
+	return (xUpdate,pUpdate)
+
+
+def kalman2d_shoot(ux, uy, ox, oy, reset=False):
+	decision = (0, 0, False)
+	#uxuy = u value || oxoy = z value
+	if reset == True:
+		global arrXUpdates
+		arrXUpdates = [[0, 0]]
+		global arrPUpdates
+		arrPUpdates = [(2 * np.identity(2))]
+		global count
+		count = 1
+	
+	
+	#(xUpdate, pUpdate) = _KALMANCALCULATION_(ux,uy,ox,oy,arrXUpdates, arrPUpdates, reset)
+	Amx = np.identity(2)
+	Bmx = np.identity(2)
+	Hmx = np.identity(2)
+	Q = np.matrix([[2, 0.5], [0.5, 2]])  # Q = np.matrix([[0.0001, 0.00002], [0.00002, 0.0001]])
+	R = np.matrix([[200, 50], [50, 300]])  # R = np.matrix([[0.01, 0.005], [0.005, 0.02]])
+	
+	# Calculations
+	uVal = [ux, uy]
+	zVal = [ox, oy]
+	uVal = np.transpose(uVal)
+	zVal = np.transpose(zVal)
+	
+	# get latest value from arrays
+	xPrev = arrXUpdates[len(arrXUpdates) - 1]
+	pPrev = arrPUpdates[len(arrPUpdates) - 1]
+	
+	xPredict = kf_predictStateEstimate(Amx, xPrev, Bmx, uVal)
+	pPredict = kf_predictErrorCovariance(Amx, pPrev, Q)
+	kalmanGain = kf_updateKalmanGain(pPredict, Hmx, R)
+	xUpdate = kf_updateStateEstimate(xPredict, kalmanGain, Hmx, zVal)
+	pUpdate = kf_updateEstimateCovariance(Hmx, kalmanGain, pPredict)
 	# ===============
 	
 	# use xupdate to shoot @ coordinates
@@ -199,7 +226,7 @@ def kalman2d_shoot(ux, uy, ox, oy, reset=False):
 
 	# if (plow2 < 4.76) :
 	# if (plow2 < 0.001):
-	if (abs(ox - xlow1) <= 4):
+	if (abs(ox - xlow1) <= 4.5):
 		# print("SHOOT!")
 		# print(str(xUpdate[0]) + str(xUpdate[1]))
 		# print(str(pUpdate[0]) + str(pUpdate[1]))
