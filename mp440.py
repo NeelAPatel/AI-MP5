@@ -140,12 +140,10 @@ Kalman 2D
 global arrXUpdates
 global arrPUpdates
 global count
+
 def kalman2d_shoot(ux, uy, ox, oy, reset=False):
 	decision = (0, 0, False)
-	#uxuy = u value
-	#oxoy = z value
-	
-	print((ux,uy,ox,oy))
+	#uxuy = u value || oxoy = z value
 	
 	if reset == True:
 		global arrXUpdates
@@ -154,15 +152,13 @@ def kalman2d_shoot(ux, uy, ox, oy, reset=False):
 		arrPUpdates = [(2*np.identity(2))]
 		
 		global count
-		count = 0
+		count = 1
 		
 	Amx = np.identity(2)
 	Bmx = np.identity(2)
 	Hmx = np.identity(2)
-	#Q = np.matrix([[0.0001, 0.00002], [0.00002, 0.0001]])
-	#R = np.matrix([[0.01, 0.005], [0.005, 0.02]])
-	Q = np.matrix([[2, 0.5], [0.5, 2]])
-	R = np.matrix([[200, 50], [50, 300]])
+	Q = np.matrix([[2, 0.5], [0.5, 2]]) #Q = np.matrix([[0.0001, 0.00002], [0.00002, 0.0001]])
+	R = np.matrix([[200, 50], [50, 300]]) #R = np.matrix([[0.01, 0.005], [0.005, 0.02]])
 	
 	#Calculations
 	uVal = [ux,uy]
@@ -170,9 +166,6 @@ def kalman2d_shoot(ux, uy, ox, oy, reset=False):
 	uVal = np.transpose(uVal)
 	zVal = np.transpose(zVal)
 
-	#xPrev = [0,0]
-	#pPrev = np.identity(2)
-	
 	#get latest value from arrays
 	xPrev = arrXUpdates[len(arrXUpdates) - 1]
 	pPrev = arrPUpdates[len(arrPUpdates) - 1]
@@ -183,24 +176,36 @@ def kalman2d_shoot(ux, uy, ox, oy, reset=False):
 	xUpdate = kf_updateStateEstimate(xPredict, kalmanGain, Hmx, zVal)
 	pUpdate = kf_updateEstimateCovariance(Hmx, kalmanGain, pPredict)
 	
+	# ===============
+	
 	# use xupdate to shoot @ coordinates
 	xlow1 = xUpdate[0].item(0)
 	xlow2 = xUpdate[0].item(1)
-	
 	
 	#use pudpate to find good range
 	plow1 = pUpdate[0].item(0)
 	plow2 = pUpdate[0].item(1)
 	
-	print((plow1, plow2))
-	if (plow2 < 4.76) :
-	#if (abs(ox - xlow1) <= 5 and abs(oy - xlow2) <= 5):
-		print("SHOOT!")
-		print(str(xUpdate[0]) + str(xUpdate[1]))
-		print(str(pUpdate[0]) + str(pUpdate[1]))
-		print(str((ox, oy)) + str((ux,uy)))
-		print((xlow1, xlow2))
-		print((plow1, plow2))
+	print
+	print (count)
+	# print("PUpdate 0: " + str(pUpdate[0]))
+	# print("XUpdate 0: " + str(xUpdate[0]))
+	# print("ABS: " + str(abs(ox - xlow1)) + " " + str(abs(oy - xlow2)))
+	
+	
+	if count >= 199:
+		decision = (xlow1, xlow2, True)
+		return decision
+
+	# if (plow2 < 4.76) :
+	# if (plow2 < 0.001):
+	if (abs(ox - xlow1) <= 4):
+		# print("SHOOT!")
+		# print(str(xUpdate[0]) + str(xUpdate[1]))
+		# print(str(pUpdate[0]) + str(pUpdate[1]))
+		# print(str((ox, oy)) + str((ux,uy)))
+		# print((xlow1, xlow2))
+		# print((plow1, plow2))
 		decision = (xlow1, xlow2, True) #shoot
 	else:
 		decision = (xlow1, xlow2, False)
@@ -208,22 +213,8 @@ def kalman2d_shoot(ux, uy, ox, oy, reset=False):
 	arrXUpdates.append(xUpdate)
 	arrPUpdates.append(pUpdate)
 	
+	print("========")
 	
-	# if xUpdate < .0015 and pUpdate < 0.014:
-	# 	decision = (xUpdate, pUpdate, True)
-	# else:
-	# 	decision = (xUpdate, pUpdate, False)
-	#if within Range
-		# return w/ true
-	
-	# else return same with false
-	
-	
-	#print ("\nX UPDATE: " + str(list(xUpdate)))
-	#print ("P UPDATE: " + str(list(pUpdate)))
-	#print(xUpdate[1].item(0))
-	
-	print (count)
 	count += 1
 	
 	return decision

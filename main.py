@@ -143,11 +143,17 @@ def _background_logic():
             TARGET_ESTIMATED_LOCATION = (ex, ey)
             if shoot == True:
                 PG_LASER_ON = True
+                
+                f = open("results.txt", "a+")
+                f.write(str( ex -TARGET_LOCATION[0]) + "\n")
+                f.close()
+                
                 print "Shot fired!"
                 print "Actual target location is (" + str(TARGET_LOCATION[0]) + "," + str(TARGET_LOCATION[1])
                 print "Estimated target location is (" + str(ex) + "," + str(ey)
                 print "Off target center by " + str(ex - TARGET_LOCATION[0])
-    
+                
+                
             PG_UI_UPDATED = True
 
         if PG_UI_UPDATED == True:
