@@ -213,8 +213,8 @@ def kalman2d_shoot(ux, uy, ox, oy, reset=False):
 	plow1 = pUpdate[0].item(0)
 	plow2 = pUpdate[0].item(1)
 	
-	print
-	print (count)
+	#print
+	#print (count)
 	# print("PUpdate 0: " + str(pUpdate[0]))
 	# print("XUpdate 0: " + str(xUpdate[0]))
 	# print("ABS: " + str(abs(ox - xlow1)) + " " + str(abs(oy - xlow2)))
@@ -240,7 +240,7 @@ def kalman2d_shoot(ux, uy, ox, oy, reset=False):
 	arrXUpdates.append(xUpdate)
 	arrPUpdates.append(pUpdate)
 	
-	print("========")
+	#print("========")
 	
 	count += 1
 	
@@ -253,8 +253,5 @@ Kalman 2D
 
 
 def kalman2d_adv_shoot(ux, uy, ox, oy, reset=False):
-	decision = (0, 0, False)
-	# Your code starts here
-	# Your code ends here
-	_raise_not_defined()
+	decision = kalman2d_shoot(ux,uy,ox,oy,reset)
 	return decision

@@ -137,7 +137,7 @@ def _background_logic():
             TARGET_OBSERVED_LOCATION = (x + oxn[0], y + oyn[0])
 
             # Calling the shots... 
-            (ex, ey, shoot) = mp.kalman2d_shoot(ux, uy, x + oxn[0], y + oyn[0], first_iteration)
+            (ex, ey, shoot) = mp.kalman2d_adv_shoot(ux, uy, x + oxn[0], y + oyn[0], first_iteration)
             if first_iteration == True:
                 first_iteration = False
             TARGET_ESTIMATED_LOCATION = (ex, ey)
@@ -198,7 +198,7 @@ if __name__ == "__main__":
     # This is for part a of the MP. Comment this when you want to work on part b of the MP
     # data = _load_data()
     # output = mp.kalman2d(data)
-    # plot(data, output)
+    # mp.plot(data, output)
 
     # This is for part b of the MP. Uncomment when you work on this part of the MP
     #Remove the block comment to work on part b of the the MP
